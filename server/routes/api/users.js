@@ -3,9 +3,10 @@ const router = express.Router()
 const url = require('url')
 const db = require('../../config/keys').pgURL
 const bcrypt = require("bcrypt")
-
-var conString = url.parse(process.env.ELEPHANTSQL_URL || db)
 const Pool = require('pg').Pool
+var jwt = require('jsonwebtoken');
+// import { createToken } from '../../helper/helper'
+var conString = url.parse(process.env.ELEPHANTSQL_URL || db)
 const auth = conString.auth.split(':');
 
 const config = {
@@ -19,64 +20,100 @@ const config = {
 const saltRounds = 10
 const pool = new Pool(config)
 
-//Item Model 
-//route.get is retrieving all with route 'api/items/'
-//{date:1 } ascending order and -1 is descending
-const User = require('../../model/user')
-router.get('/', (req,res)=>{
-    // console.log("yee")
-    User.find().sort({date:-1}).then(users => res.json(users))
-  
-})
+
+
+
 
 router.post('/signup', (req,res)=>{
-    // console.log("yee")
-    // Item.find().sort({date:-1}).then(items => res.json(items))
-    const { username, email,password } = req.body
-    console.log("username is" + req.body.username)
-    var post_body = req.body;
-    // Return the POST message
-    // res.send(post_body);
+   
+    const { username, email,password} = req.body
+    // console.log("username is" + req.body.username)
+   
+    
+    const check = checkUser(username)
+    if(check){
     const salt = bcrypt.genSaltSync(saltRounds);
     const hash = bcrypt.hashSync(password, salt);
     pool.query('INSERT INTO users (username, email,password) VALUES ($1, $2,$3)', [username, email,hash], (error, results) => {
       if (error) {
-        throw error
+        // throw error;
+        res.send(error.detail);
+        return;
       }
-    console.log(__dirname)
-    // res.sendFile(__dirname + '/dashboard.html')
    
-    res.status(200).send(`Added`)
+    res.status(200).send("Registered")
     
     })
+  }
+  else{
+    res.status(400).send({message:"Username Taken"})
+  }
+
+    
+   
+  
   
 })
 
 router.post('/signin', (req,res)=>{
-    // console.log("yee")
-    // Item.find().sort({date:-1}).then(items => res.json(items))
-    const { usernamepassword } = req.body
-    console.log("username is" + req.query)
-    pool.query('INSERT INTO users (username, email,password) VALUES ($1, $2,$3)', [username, email,password], (error, results) => {
+   
+    const { username,password } = req.body
+    // console.log("username is" + req.body.username)
+  if(username != null && password != null){
+    pool.query(`SELECT * FROM users`,  (error, results) => {
       if (error) {
         throw error
       }
-      res.writeHead(302, {
-        'Location': '/signin.html'
-        //add other headers here...
+      bcrypt.compare(password, results.rows[0].password, function(err, res) {
+        if (err){
+          // handle error
+          console.log(err)
+          throw err;
+        }
+        if (res){
+            var token = jwt.sign({
+              exp: Math.floor(Date.now() / 1000) + (60 * 60),
+              data: username
+            }, 'secret');
+            var payload ={
+              token:token,
+              login:true,
+              message:"Signed In"
+            }
+            
+            res.status(200).json(payload)
+        } 
+        
+        
       });
-      res.end();
     
+   
     })
-  
+  }
 })
 
+checkUser = (username) => {
+  let val = true;
+    pool.query(`SELECT * FROM users`,  (error, results) => {
+      if (error) {
+        throw error
+      }
+      else if(results.rows[0].username === username){
+        //if false user in db
+        console.log(results.rows[0].username)
+      return false;
+      }else{
+        //IF true then username not in db
+        console.log(results.rows[0].username)
+        val = true;
+      }
+    }
+  )
+    // console.log(val)
+    return true;
+}
 
 
-// router.delete('/:id', (req,res)=>{
-//     // console.log("yee")
-//     // Item.find().sort({date:-1}).then(items => res.json(items))
-//    User.findById(req.params.id).then(user => user.remove(() => res.json({success:true})))
-//    .catch(err => res.status(404).json({success:false}))
-// })
+
+
 module.exports = router
