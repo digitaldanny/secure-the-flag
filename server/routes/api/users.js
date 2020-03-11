@@ -49,28 +49,29 @@ router.post('/signup', (req,res)=>{
     res.status(400).send({message:"Username Taken"})
   }
 
-    
-   
   
   
 })
 
-router.post('/signin', (req,res)=>{
+router.post('/signin', (req,response)=>{
    
     const { username,password } = req.body
     // console.log("username is" + req.body.username)
-  if(username != null && password != null){
+  // if(username != null && password != null){
     pool.query(`SELECT * FROM users`,  (error, results) => {
       if (error) {
         throw error
       }
-      bcrypt.compare(password, results.rows[0].password, function(err, res) {
+      console.log("yee " +username +password +results.rows[0].password )
+      bcrypt.compare(password,results.rows[0].password,function(err, res) {
         if (err){
           // handle error
           console.log(err)
           throw err;
         }
+        console.log(res)
         if (res){
+          console.log("here")
             var token = jwt.sign({
               exp: Math.floor(Date.now() / 1000) + (60 * 60),
               data: username
@@ -81,7 +82,7 @@ router.post('/signin', (req,res)=>{
               message:"Signed In"
             }
             
-            res.status(200).json(payload)
+            response.status(200).json(payload)
         } 
         
         
@@ -89,28 +90,35 @@ router.post('/signin', (req,res)=>{
     
    
     })
-  }
+  // }
 })
 
 checkUser = (username) => {
   let val = true;
-    pool.query(`SELECT * FROM users`,  (error, results) => {
+   const yerr =  pool.query(`SELECT * FROM users`,  (error, results) => {
       if (error) {
         throw error
       }
-      else if(results.rows[0].username === username){
-        //if false user in db
-        console.log(results.rows[0].username)
-      return false;
-      }else{
+      else if(results.rows[0].username == undefined){
+        return true;
+      }
+      // else if(rresults.rows[0].username === username ){
+      //   //if false user in db
+      //   console.log(results.rows[0].username)
+      // return false;
+      // }
+      else{
         //IF true then username not in db
         console.log(results.rows[0].username)
-        val = true;
+        return true;
       }
+     
     }
   )
-    // console.log(val)
-    return true;
+    
+    val = yerr;
+    console.log(val)
+    return val;
 }
 
 
