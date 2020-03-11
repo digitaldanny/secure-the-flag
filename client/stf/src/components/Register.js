@@ -63,7 +63,8 @@ const handleLink = () =>{
  
         return (
             
-            <div>
+            <div className=" container row">
+                <div className="col s6 m6 lg6">
                 <form action="" method="post" onSubmit={handleSubmit}>
                     <label htmlFor="Email">Email</label>
                     <input type="email" name="email"  value={email} onChange={handleChange} id="email"/>
@@ -76,6 +77,7 @@ const handleLink = () =>{
                     <button type="submit" >Submit</button>
                 </form>
                 <button onClick={handleLink}>Sign In</button>
+            </div>
             </div>
         )
     

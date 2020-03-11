@@ -21,15 +21,9 @@ const saltRounds = 10
 const pool = new Pool(config)
 
 
-
-
-
 router.post('/signup', (req,res)=>{
    
     const { username, email,password} = req.body
-    // console.log("username is" + req.body.username)
-   
-    
     const check = checkUser(username)
     if(check){
     const salt = bcrypt.genSaltSync(saltRounds);
@@ -48,30 +42,26 @@ router.post('/signup', (req,res)=>{
   else{
     res.status(400).send({message:"Username Taken"})
   }
-
-  
-  
 })
 
 router.post('/signin', (req,response)=>{
    
     const { username,password } = req.body
-    // console.log("username is" + req.body.username)
-  // if(username != null && password != null){
     pool.query(`SELECT * FROM users`,  (error, results) => {
       if (error) {
         throw error
       }
-      console.log("yee " +username +password +results.rows[0].password )
+      // console.log("yee " +username +password +results.rows[0].password )
+      if(username === results.rows[0].username){
       bcrypt.compare(password,results.rows[0].password,function(err, res) {
         if (err){
           // handle error
           console.log(err)
           throw err;
         }
-        console.log(res)
+        // console.log(res)
         if (res){
-          console.log("here")
+        
             var token = jwt.sign({
               exp: Math.floor(Date.now() / 1000) + (60 * 60),
               data: username
@@ -83,14 +73,17 @@ router.post('/signin', (req,response)=>{
             }
             
             response.status(200).json(payload)
-        } 
-        
-        
+        }
       });
-    
-   
+    }else{
+      var payload ={
+        token:null,
+        login:false,
+        message:"Error"
+      }
+      response.status(200).json(payload)
+    }
     })
-  // }
 })
 
 checkUser = (username) => {
@@ -102,14 +95,10 @@ checkUser = (username) => {
       else if(results.rows[0].username == undefined){
         return true;
       }
-      // else if(rresults.rows[0].username === username ){
-      //   //if false user in db
-      //   console.log(results.rows[0].username)
-      // return false;
-      // }
+   
       else{
         //IF true then username not in db
-        console.log(results.rows[0].username)
+        
         return true;
       }
      
@@ -117,7 +106,7 @@ checkUser = (username) => {
   )
     
     val = yerr;
-    console.log(val)
+  
     return val;
 }
 

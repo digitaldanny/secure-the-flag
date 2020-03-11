@@ -49,12 +49,12 @@ router.post('/addPost', (req,res)=>{
 router.get('/getPosts', (req,res)=>{
    
     const { username } = req.query
-    // console.log("Request" + username)
+   
     try {
     var usernameValue = jwt.verify(username, 'secret').data;
-    // console.log(Cookies.get("user"))
+   
     }catch(e){
-        res.status(401).send("Refresh Page e Log Back in to work")
+        // res.status(401).send("Refresh Page e Log Back in to work")
     }
  
     pool.query(`SELECT * FROM post WHERE username= '${usernameValue}' `, (error, results) => {
@@ -62,9 +62,11 @@ router.get('/getPosts', (req,res)=>{
         throw error
       }
 
-    
+      if(results.rows.length >0){
       res.status(200).send(results.rows)
+      }
     })
+    // res.status(401).send("Refresh Page e Log Back in to work")
   
 })
 
@@ -76,16 +78,16 @@ checkUser = (username) => {
       }
       else if(results.rows[0].username === username){
         //if false user in db
-        console.log(results.rows[0].username)
+       
       return false;
       }else{
         //IF true then username not in db
-        console.log(results.rows[0].username)
+      
         val = true;
       }
     }
   )
-    // console.log(val)
+    
     return true;
 }
 

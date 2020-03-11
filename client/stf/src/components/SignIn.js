@@ -57,7 +57,8 @@ const SignIn = (props) => {
         props.history.push("/signup")
         }
         return (
-            <div>
+            <div className="row">
+                <div className="col s6 m6 lg6">
                 <form action="" method="post" onSubmit={handleSubmit}>
                    
                     <label htmlFor="username">Username</label>
@@ -67,6 +68,7 @@ const SignIn = (props) => {
                     <button type="submit" >Submit</button>
                 </form>
                 <button onClick={handleLink}>Sign Up</button>
+            </div>
             </div>
         )
     
