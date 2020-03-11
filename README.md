@@ -6,7 +6,7 @@ Run npm install in the server folder.
 
 Open two terminals
 
-First terminal enter the client folder and run npm start.
+First terminal enter the client/stf folder and run npm start.
 Second terminal go into server folder and run node server.js
 
 Add /signup to url to go to signup route and create an account.
