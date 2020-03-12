@@ -56,7 +56,7 @@ router.get('/getPosts', (req,res)=>{
     }catch(e){
         // res.status(401).send("Refresh Page e Log Back in to work")
     }
- 
+    // console.log(usernameValue)
     pool.query(`SELECT * FROM post WHERE username= '${usernameValue}' `, (error, results) => {
       if (error) {
         throw error
@@ -67,6 +67,37 @@ router.get('/getPosts', (req,res)=>{
       }
     })
     // res.status(401).send("Refresh Page e Log Back in to work")
+  
+})
+
+
+router.get('/getOtherPost', (req,res)=>{
+   
+    const { username } = req.query
+
+    //Strong version wraps it as a string
+    // pool.query(`SELECT * FROM post WHERE username= '${username} '`, (error, results) => {
+    //     if (error) {
+    //       throw error
+    //     }
+  
+    //     if(results.rows.length >0){
+    //     res.status(200).send(results.rows)
+    //     }
+    //   })
+     
+   //This will break if you use 105' OR '1'='1
+  
+    pool.query(`SELECT * FROM post WHERE username= '${username}' `, (error, results) => {
+      if (error) {
+        throw error
+      }
+
+      if(results.rows.length >0){
+      res.status(200).send(results.rows)
+      }
+    })
+   
   
 })
 

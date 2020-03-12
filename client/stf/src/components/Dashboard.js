@@ -3,6 +3,7 @@ import Cookies from 'js-cookie'
 import axios from 'axios'
 import Navbar from './Navbar'
 import React, { Component } from 'react'
+import SearchPost from './SearchPost'
 
 
 export class Dashboard extends Component {
@@ -80,9 +81,13 @@ export class Dashboard extends Component {
             );
         return (
             <div className="container row">
-                <div className="col s6 m6 lg6">
-            <h1>Dashboard</h1>
+                 <h1>Dashboard</h1>
             <Navbar></Navbar>
+            <div className="col s6 m6 lg6">
+            <SearchPost/>
+            </div>
+            <div className="col s6 m6 lg6">
+           
             {/* <h1 onClick={showPost}>Hit Me</h1> */}
             <form style={{marginTop:20}} action="" onSubmit={this.handleSubmit}>
             <textarea  type="textarea" value={this.state.postData} onChange={this.handleChange} name="post" id="post"/>
