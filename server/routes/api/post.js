@@ -5,7 +5,6 @@ const db = require('../../config/keys').pgURL
 const bcrypt = require("bcrypt")
 const Pool = require('pg').Pool
 var jwt = require('jsonwebtoken');
-// import { createToken } from '../../helper/helper'
 var conString = url.parse(process.env.ELEPHANTSQL_URL || db)
 const auth = conString.auth.split(':');
 
@@ -19,10 +18,6 @@ const config = {
 };
 
 const pool = new Pool(config)
-
-
-
-
 
 router.post('/addPost', (req,res)=>{
    
@@ -76,6 +71,9 @@ router.get('/getOtherPost', (req,res)=>{
     const { username } = req.query
 
     //Strong version wraps it as a string
+    //Removes quoted from string
+    //var strWithOutQuotes= username.replace(/[()/-/'"]+/g, '')
+    
     // pool.query(`SELECT * FROM post WHERE username= '${username} '`, (error, results) => {
     //     if (error) {
     //       throw error
@@ -86,41 +84,42 @@ router.get('/getOtherPost', (req,res)=>{
     //     }
     //   })
      
-   //This will break if you use 105' OR '1'='1
-  
+   //This will break if you use 105' OR '1'='1 || a' or 'a' = 'a
     pool.query(`SELECT * FROM post WHERE username= '${username}' `, (error, results) => {
       if (error) {
         throw error
       }
 
       if(results.rows.length >0){
-      res.status(200).send(results.rows)
+        res.status(200).send(results.rows)
+      }else{
+        res.status(204).send(results.rows)
       }
     })
    
   
 })
 
-checkUser = (username) => {
-  let val = true;
-    pool.query(`SELECT * FROM users`,  (error, results) => {
-      if (error) {
-        throw error
-      }
-      else if(results.rows[0].username === username){
-        //if false user in db
-       
-      return false;
-      }else{
-        //IF true then username not in db
-      
-        val = true;
-      }
+    checkUser = (username) => {
+    let val = true;
+        pool.query(`SELECT * FROM users`,  (error, results) => {
+        if (error) {
+            throw error
+        }
+        else if(results.rows[0].username === username){
+            //if false user in db
+        
+        return false;
+        }else{
+            //IF true then username not in db
+        
+            val = true;
+        }
+        }
+    )
+        
+        return true;
     }
-  )
-    
-    return true;
-}
 
 
 

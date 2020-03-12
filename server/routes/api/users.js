@@ -47,35 +47,40 @@ router.post('/signup', (req,res)=>{
 router.post('/signin', (req,response)=>{
    
     const { username,password } = req.body
-    pool.query(`SELECT * FROM users`,  (error, results) => {
+     //Removes quotes,parenthesis,dashes and semi colons from string
+    var strWithOutQuotes= username.replace(/[;()'"-]+/g, '')
+    // console.log(strWithOutQuotes)
+    
+    pool.query(`SELECT * FROM users WHERE username= '${strWithOutQuotes}'`,  (error, results) => {
       if (error) {
         throw error
       }
-      // console.log("yee " +username +password +results.rows[0].password )
-      if(username === results.rows[0].username){
-      bcrypt.compare(password,results.rows[0].password,function(err, res) {
-        if (err){
-          // handle error
-          console.log(err)
-          throw err;
-        }
-        // console.log(res)
-        if (res){
-        
-            var token = jwt.sign({
-              exp: Math.floor(Date.now() / 1000) + (60 * 60),
-              data: username
-            }, 'secret');
-            var payload ={
-              token:token,
-              login:true,
-              message:"Signed In"
+      console.log(results.rows.length)
+      if(results.rows.length !== 0){
+        if(strWithOutQuotes === results.rows[0].username){
+          bcrypt.compare(password,results.rows[0].password,function(err, res) {
+            if (err){
+              // handle error
+              console.log(err)
+              throw err;
             }
+            if (res){
             
-            response.status(200).json(payload)
-        }
-      });
-    }else{
+                var token = jwt.sign({
+                  exp: Math.floor(Date.now() / 1000) + (60 * 60),
+                  data: username
+                }, 'secret');
+                var payload ={
+                  token:token,
+                  login:true,
+                  message:"Signed In"
+                }
+                
+                response.status(200).json(payload)
+            }
+          });
+        }}
+    else{
       var payload ={
         token:null,
         login:false,
