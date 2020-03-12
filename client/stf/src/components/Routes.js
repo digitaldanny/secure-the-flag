@@ -16,17 +16,17 @@ const Routes = () => {
     return (
         <div>
                 
-            <Router>
-        <Switch>
-          <ProtectedRoute auth={Auth.auth} exact path="/dashboard" component={Dashboard}/>
-           
-          <ProtectedLogin auth={Auth.auth} component={SignIn} exact path="/"/>
-           
-         
-          <Route exact path="/signup">
-            <Register/>
-          </Route>
-        </Switch>
+        <Router>
+          <Switch>
+            <ProtectedRoute auth={Auth.auth} exact path="/dashboard" component={Dashboard}/>
+            
+            <ProtectedLogin auth={Auth.auth} component={SignIn} exact path="/"/>
+            
+          
+            <Route exact path="/signup">
+              <Register/>
+            </Route>
+          </Switch>
         </Router>
        
         </div>
