@@ -1,15 +1,11 @@
 FROM node:lts-alpine
 
-COPY . .
+COPY . server/
 ENV PORT 8080
 EXPOSE ${PORT}
-RUN ls 
 
-RUN rm rf client && \
- rm *.yaml *.md 
-
+WORKDIR server
 RUN rm Dockerfile && \
-rm -rf node_modules && \
 npm install --slient && \
 npm install -g nodemon 
 

@@ -1,12 +1,11 @@
 FROM node:lts-alpine
 
-COPY client/stf/ stf/
+COPY . stf/
 ENV PORT 8080
 EXPOSE ${PORT}
 
 RUN cd stf/ && \
 rm Dockerfile && \
-rm -rf node_modules && \
 npm install --slient && \
 npm install -g serve && \
 npm run build && \
