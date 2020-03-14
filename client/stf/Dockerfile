@@ -1,6 +1,6 @@
 FROM node:lts-alpine
 
-COPY . stf/
+COPY client/stf/ stf/
 ENV PORT 8080
 EXPOSE ${PORT}
 

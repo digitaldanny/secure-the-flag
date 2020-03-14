@@ -1,0 +1,50 @@
+steps:
+
+  #===build===
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'BUILD SERVER CONTAINER'
+    args: 
+    - 'build'
+    - '-t'
+    - 'gcr.io/$PROJECT_ID/stf-server'
+    - './server'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'BUILD CLIENT CONTAINER'
+    args: 
+    - 'build'
+    - '-t'
+    - 'gcr.io/$PROJECT_ID/stf-client'
+    - '--build-arg'
+    - 'REACT_APP_BASE_API_URL=${_REACT_APP_BASE_API_URL}'
+    - './client/stf'
+
+  # == deploy ===
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'DEPLOY SERVER'
+    args:
+    - 'run'
+    - 'deploy'
+    - 'stf-server'
+    - '--image'
+    - 'gcr.io/$PROJECT_ID/stf-server'
+    - '--region'
+    - 'us-east1'
+    - '--platform'
+    - 'managed'
+    - '--allow-unauthenticated'
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'DEPLOY CLIENT'
+    args:
+    - 'run'
+    - 'deploy'
+    - 'stf-client'
+    - '--image'
+    - 'gcr.io/$PROJECT_ID/stf-client'
+    - '--region'
+    - 'us-east1'
+    - '--platform'
+    - 'managed'
+    - '--allow-unauthenticated'
