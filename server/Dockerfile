@@ -1,6 +1,6 @@
 FROM node:lts-alpine
 
-COPY server/ .
+COPY server ./
 ENV PORT 8080
 EXPOSE ${PORT}
 
