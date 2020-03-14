@@ -1,8 +1,12 @@
 FROM node:lts-alpine
 
-COPY server ./
+COPY . .
 ENV PORT 8080
 EXPOSE ${PORT}
+RUN ls 
+
+RUN rm rf client && \
+ rm *.yaml *.md 
 
 RUN rm Dockerfile && \
 rm -rf node_modules && \
