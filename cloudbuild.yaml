@@ -17,7 +17,7 @@ steps:
     - '-t'
     - 'gcr.io/$PROJECT_ID/stf-client'
     - '--build-arg'
-    - 'REACT_APP_BASE_API_URL=${_REACT_APP_BASE_API_URL}'
+    - 'REACT_APP_BASE_API_URL_G=${_REACT_APP_BASE_API_URL}'
     - './client/stf'
 
   # == deploy ===
