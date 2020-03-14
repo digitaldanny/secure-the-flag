@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import axios from 'axios'
+import apiUrl from '../config/keys'
 import authApi from './authApi/authApi'
 import Cookies from 'js-cookie'
 import { withRouter } from 'react-router-dom';
@@ -14,7 +15,7 @@ const SignIn = (props) => {
 
       const handleSubmit = function (event){
         event.preventDefault();
-        axios.post("http://localhost:5000/api/users/signin" , {
+        axios.post(apiUrl.signinURL , {
                
                 username: username,
                 password: password,
