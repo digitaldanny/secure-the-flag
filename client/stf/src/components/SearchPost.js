@@ -15,14 +15,14 @@ class SearchPost extends Component {
         event.preventDefault();
         let currentComponent = this;
         if(this.state.otherPostData !== ''|| undefined || null){
-            console.log(apiURL.postURL);
+            // console.log(apiURL.postURL);
             axios.get(apiURL.postURL + "getOtherPost" ,{
             params: {
                 username: currentComponent.state.otherPostData,  
             }})
             .then(function (response) {
                 // location.reload()
-                console.log(response.data)
+                // console.log(response.data)
                 currentComponent.setState({
                     data:response.data,
                     otherPostData:''

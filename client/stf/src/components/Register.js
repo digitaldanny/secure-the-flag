@@ -20,7 +20,7 @@ const Register = (props) => {
             alert("Fill in any empty fields")
             return;
         }
-        console.log(apiUrl.signupURL);
+        console.log(apiUrl.signupURL + "signup");
         axios.post(apiUrl.signupURL, {
             email: email,
             username: username,

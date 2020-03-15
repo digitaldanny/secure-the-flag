@@ -55,7 +55,7 @@ router.post('/signin', (req,response)=>{
       if (error) {
         throw error
       }
-      console.log(results.rows.length)
+      // console.log(results.rows.length)
       if(results.rows.length !== 0){
         if(strWithOutQuotes === results.rows[0].username){
           bcrypt.compare(password,results.rows[0].password,function(err, res) {
@@ -64,8 +64,9 @@ router.post('/signin', (req,response)=>{
               console.log(err)
               throw err;
             }
+           
             if (res){
-            
+             
                 var token = jwt.sign({
                   exp: Math.floor(Date.now() / 1000) + (60 * 60),
                   data: username
@@ -77,6 +78,13 @@ router.post('/signin', (req,response)=>{
                 }
                 
                 response.status(200).json(payload)
+            }   else{
+              var payload ={
+                token:null,
+                login:false,
+                message:"Error"
+              }
+              response.status(200).json(payload)
             }
           });
         }}

@@ -15,7 +15,7 @@ const SignIn = (props) => {
 
       const handleSubmit = function (event){
         event.preventDefault();
-        axios.post(apiUrl.signinURL , {
+        axios.post(apiUrl.signinURL + "/signin" , {
                
                 username: username,
                 password: password,
@@ -33,6 +33,7 @@ const SignIn = (props) => {
             }
             })
             .catch(function (error) {
+              
                 console.log(error);
                 
             });

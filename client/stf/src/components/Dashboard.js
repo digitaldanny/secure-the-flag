@@ -32,7 +32,8 @@ export class Dashboard extends Component {
         }
         handleSubmit = (event) => {
             // console.log(postData)
-            // event.preventDefault();
+            let currentComponent = this;
+            event.preventDefault();
             if(this.state.postData !== ''|| undefined || null){
                 axios.post(apiURL.postURL + "addPost" , {
                     username: Cookies.get('user'),
@@ -41,6 +42,8 @@ export class Dashboard extends Component {
                 .then(function (response) {
                     // location.reload()
                     alert(response.data)
+                    currentComponent.setState({postData:''})
+                    window.location.reload(false);
                   
                 })
                 .catch(function (error) {
