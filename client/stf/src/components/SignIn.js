@@ -22,7 +22,6 @@ const SignIn = (props) => {
               
             })
             .then(function (response) {
-                // console.log(response);
                 if(response.data.login){
                 Auth.setAuth(true)
                 Cookies.set("user",response.data.token,{

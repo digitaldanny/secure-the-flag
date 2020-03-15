@@ -11,18 +11,14 @@ class SearchPost extends Component {
        
     }
     handleSubmit = (event) => {
-        // console.log(postData)
         event.preventDefault();
         let currentComponent = this;
         if(this.state.otherPostData !== ''|| undefined || null){
-            // console.log(apiURL.postURL);
             axios.get(apiURL.postURL + "getOtherPost" ,{
             params: {
                 username: currentComponent.state.otherPostData,  
             }})
             .then(function (response) {
-                // location.reload()
-                // console.log(response.data)
                 currentComponent.setState({
                     data:response.data,
                     otherPostData:''

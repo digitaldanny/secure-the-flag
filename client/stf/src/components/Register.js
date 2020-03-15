@@ -30,7 +30,6 @@ const Register = (props) => {
           .then(function (response) {
             
             alert(response.data);
-            // props.history.push("/")
             setconfirmPassword('')
             setPassword('')
             setEmail('')
