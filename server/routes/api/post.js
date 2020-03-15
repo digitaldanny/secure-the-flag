@@ -28,7 +28,6 @@ router.post('/addPost', (req,res)=>{
     }catch(e){
         res.status(401).send("Refresh Page and Log Back in to work")
     }
-    console.log("we here")
     pool.query('INSERT INTO post (username, post) VALUES ($1, $2)', [usernameValue, post], (error, results) => {
       if (error) {
         // throw error;
@@ -48,10 +47,7 @@ router.get('/getPosts', (req,res)=>{
     try {
     var usernameValue = jwt.verify(username, 'secret').data;
    
-    }catch(e){
-        // res.status(401).send("Refresh Page e Log Back in to work")
-    }
-    // console.log(usernameValue)
+    }catch(e){}
     pool.query(`SELECT * FROM post WHERE username= '${usernameValue}' `, (error, results) => {
       if (error) {
         throw error
@@ -61,43 +57,27 @@ router.get('/getPosts', (req,res)=>{
       res.status(200).send(results.rows)
       }
     })
-    // res.status(401).send("Refresh Page e Log Back in to work")
-  
 })
 
 
 router.get('/getOtherPost', (req,res)=>{
    
     const { username } = req.query
-
-    //Strong version wraps it as a string
+   //Strong version wraps it as a string
     //Removes quoted from string
-    //var strWithOutQuotes= username.replace(/[()/-/'"]+/g, '')
-    
-    // pool.query(`SELECT * FROM post WHERE username= '${username} '`, (error, results) => {
-    //     if (error) {
-    //       throw error
-    //     }
-  
-    //     if(results.rows.length >0){
-    //     res.status(200).send(results.rows)
-    //     }
-    //   })
-     
-   //This will break if you use 105' OR '1'='1 || a' or 'a' = 'a
-    pool.query(`SELECT * FROM post WHERE username= '${username}' `, (error, results) => {
-      if (error) {
-        throw error
-      }
-
-      if(results.rows.length >0){
-        res.status(200).send(results.rows)
-      }else{
-        res.status(204).send(results.rows)
-      }
-    })
-   
-  
+    var strWithOutQuotes= username.replace(/[()/-/'"]+/g, '')
+    // console.log(strWithOutQuotes)
+    pool.query(`SELECT * FROM post WHERE username= '${strWithOutQuotes}'`, (error, results) => {
+        if (error) {
+          throw error
+        }
+        // console.log(results)
+        if(results.rows.length >0){
+          res.status(200).send(results.rows)
+        }else{
+          res.status(204).send(results.rows)
+        }
+      })
 })
 
     checkUser = (username) => {

@@ -49,13 +49,11 @@ router.post('/signin', (req,response)=>{
     const { username,password } = req.body
      //Removes quotes,parenthesis,dashes and semi colons from string
     var strWithOutQuotes= username.replace(/[;()'"-]+/g, '')
-    // console.log(strWithOutQuotes)
-    
     pool.query(`SELECT * FROM users WHERE username= '${strWithOutQuotes}'`,  (error, results) => {
       if (error) {
         throw error
       }
-      // console.log(results.rows.length)
+     
       if(results.rows.length !== 0){
         if(strWithOutQuotes === results.rows[0].username){
           bcrypt.compare(password,results.rows[0].password,function(err, res) {
@@ -66,7 +64,6 @@ router.post('/signin', (req,response)=>{
             }
            
             if (res){
-             
                 var token = jwt.sign({
                   exp: Math.floor(Date.now() / 1000) + (60 * 60),
                   data: username
