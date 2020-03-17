@@ -1,12 +1,15 @@
-const express = require('express')
-const router = express.Router()
-const url = require('url')
-const db = require('../../config/keys').pgURL
-const bcrypt = require("bcrypt")
-const Pool = require('pg').Pool
+const express = require('express');
+const encoder = require('./helpers/encoder');
+const router = express.Router();
+const url = require('url');
+const db = require('../../config/keys').pgURL;
+const bcrypt = require("bcrypt");
+const Pool = require('pg').Pool;
 var jwt = require('jsonwebtoken');
+
 // import { createToken } from '../../helper/helper'
-var conString = url.parse(process.env.ELEPHANTSQL_URL || db)
+
+var conString = url.parse(process.env.ELEPHANTSQL_URL || db);
 const auth = conString.auth.split(':');
 
 const config = {
@@ -17,8 +20,8 @@ const config = {
   database: conString.pathname.split('/')[1],
   ssl: true
 };
-const saltRounds = 10
-const pool = new Pool(config)
+const saltRounds = 10;
+const pool = new Pool(config);
 
 
 router.post('/signup', (req,res)=>{
@@ -66,11 +69,9 @@ router.post('/signin', (req,response)=>{
             }
            
             if (res){
-             
-                var token = jwt.sign({
-                  exp: Math.floor(Date.now() / 1000) + (60 * 60),
-                  data: username
-                }, 'secret');
+
+                const token = encoder.encodeBase64(username);
+
                 var payload ={
                   token:token,
                   login:true,

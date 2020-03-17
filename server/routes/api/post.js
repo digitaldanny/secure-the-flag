@@ -1,8 +1,10 @@
-const express = require('express')
-const router = express.Router()
-const url = require('url')
-const db = require('../../config/keys').pgURL
-const bcrypt = require("bcrypt")
+const express = require('express');
+const router = express.Router();
+const url = require('url');
+const db = require('../../config/keys').pgURL;
+const bcrypt = require("bcrypt");
+const encoder = require('./helpers/encoder');
+const verifier = require('./helpers/verifier');
 const Pool = require('pg').Pool
 var jwt = require('jsonwebtoken');
 var conString = url.parse(process.env.ELEPHANTSQL_URL || db)
@@ -24,7 +26,13 @@ router.post('/addPost', (req,res)=>{
     let username = req.body.username
     let post = req.body.post
     try {
-    var usernameValue = jwt.verify(username, 'secret').data;
+
+      var usernameValue = encoder.decodeBase64(username);
+      
+      if(!verifier.verifyUser(usernameValue)){
+        res.status(401).send("Refresh Page and Log Back in to work");
+      }
+
     }catch(e){
         res.status(401).send("Refresh Page and Log Back in to work")
     }
@@ -46,10 +54,15 @@ router.get('/getPosts', (req,res)=>{
     const { username } = req.query
    
     try {
-    var usernameValue = jwt.verify(username, 'secret').data;
+      var usernameValue = encoder.decodeBase64(username);
+      
+      if(!verifier.verifyUser(usernameValue)){
+        res.status(401).send("Refresh Page and Log Back in to work");
+      }
+
    
     }catch(e){
-        // res.status(401).send("Refresh Page e Log Back in to work")
+       res.status(401).send("Refresh Page e Log Back in to work")
     }
     // console.log(usernameValue)
     pool.query(`SELECT * FROM post WHERE username= '${usernameValue}' `, (error, results) => {
@@ -85,7 +98,19 @@ router.get('/getOtherPost', (req,res)=>{
     //   })
      
    //This will break if you use 105' OR '1'='1 || a' or 'a' = 'a
-    pool.query(`SELECT * FROM post WHERE username= '${username}' `, (error, results) => {
+   try {
+    var usernameValue = encoder.decodeBase64(username);
+    
+    if(!verifier.verifyUser(usernameValue)){
+      res.status(401).send("Refresh Page and Log Back in to work");
+    }
+
+ 
+  }catch(e){
+     res.status(401).send("Refresh Page e Log Back in to work")
+    } 
+   
+   pool.query(`SELECT * FROM post WHERE username= '${username}' `, (error, results) => {
       if (error) {
         throw error
       }
