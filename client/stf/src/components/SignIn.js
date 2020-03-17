@@ -4,7 +4,7 @@ import apiUrl from '../config/keys'
 import authApi from './authApi/authApi'
 import Cookies from 'js-cookie'
 import { withRouter } from 'react-router-dom';
-import xss from './xss.js'; // class of functions to prevent XSS attacks through signin page.
+import Xss from './xss.js'; // class of functions to prevent XSS attacks through signin page.
 
 const SignIn = (props) => 
 {
@@ -15,18 +15,17 @@ const SignIn = (props) =>
     var inThirtyMinutes = new Date(new Date().getTime() + 30 * 60 * 1000);
     // Similar to componentDidMount and componentDidUpdate:
   
-    // Sanitize the user input from XSS attacks.
-    console.log("Untrusted username: " + username);
-    console.log("Untrusted password: " + password);
-    xss.sanitize(username);
+    // Sanitize the user input from XSS attacks before allowing 'handleSubmit' to 
+    // transfer it in an HTTP POST to the server (Reflected XSS).
+    var cleanUsername = Xss.sanitize(username);
+    var cleanPassword = Xss.sanitize(password);
 
     /*
      * +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
      * SUMMARY: handleSubmit
      * This handler is triggered when the "Submit" button on the signin page is clicked.
      * On entry, the handler will perform the following actions:
-     * 1. Send HTTP POST to server with XSS sanitized AND encrypted username/password 
-     *    for login.
+     * 1. Send HTTP POST to server with XSS sanitized username/password for login.
      * +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
     */
     const handleSubmit = function (event)
@@ -36,12 +35,13 @@ const SignIn = (props) =>
         // POST username/password signin to server.
         axios.post(apiUrl.signinURL + "/signin" , {
            
-            username: username,
-            password: password,
+            username: cleanUsername,
+            password: cleanPassword,
           
         })
-        .then(function (response) {
-            // console.log(response);
+        .then(function (response) 
+        {
+            console.log("SERVER RESPONSE: " + response);
             if(response.data.login)
             {
                 Auth.setAuth(true)
@@ -54,6 +54,7 @@ const SignIn = (props) =>
         })
         .catch(function (error) 
         {
+            console.log("NO RESPONSE FROM SERVER!");
             console.log(error);
         });
     }
@@ -80,7 +81,7 @@ const SignIn = (props) =>
     /*
      * +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
      * SUMMARY: handleLink
-     * ?
+     * Switch to SignUp page.
      * +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
     */
     const handleLink = () => 
