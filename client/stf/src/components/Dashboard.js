@@ -86,13 +86,14 @@ export class Dashboard extends Component {
             <div className="container row">
                  <h1>Dashboard</h1>
             <Navbar></Navbar>
-            <div className="col s6 m6 lg6">
+            <div className="col s12 m6 lg6">
             <SearchPost/>
             </div>
-            <div className="col s6 m6 lg6">
+            <div className="col s12 m6 lg6 row">
            
             {/* <h1 onClick={showPost}>Hit Me</h1> */}
             <form style={{marginTop:20}} action="" onSubmit={this.handleSubmit}>
+            <label>Enter Post Data </label>
             <textarea  type="textarea" value={this.state.postData} onChange={this.handleChange} name="post" id="post"/>
             <button type="submit">Post</button>
            
