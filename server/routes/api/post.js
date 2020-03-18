@@ -23,7 +23,7 @@ const pool = new Pool(config)
 
 router.post('/addPost', (req,res)=>{
    
-    let username = req.body.username
+    let username = req.query.username
     let post = req.body.post
     try {
 
@@ -51,8 +51,9 @@ router.post('/addPost', (req,res)=>{
 
 router.get('/getPosts', (req,res)=>{
    
-    const { username } = req.query
-   
+    const username  = req.query.username;
+    console.log(`req.params: ${req.query.username}`);
+    
     try {
       var usernameValue = encoder.decodeBase64(username);
       
@@ -81,7 +82,7 @@ router.get('/getPosts', (req,res)=>{
 
 router.get('/getOtherPost', (req,res)=>{
    
-    const { username } = req.query
+    const username = req.query.username;
 
     //Strong version wraps it as a string
     //Removes quoted from string

@@ -17,9 +17,9 @@ const config = {
 
   function verifyUser(possibleUsername) {
     
-    pool.query(`SELECT username FROM users WHERE username=${possibleUsername}`)
+    pool.query(`SELECT * FROM users WHERE username='${possibleUsername}'`)
     .then((results)=>{
-
+      console.log(results.rows[0].email);
       if (results.rows[0].username != possibleUsername){
         return false;
       }

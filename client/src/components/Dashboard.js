@@ -17,6 +17,7 @@ export class Dashboard extends Component {
         }
         componentDidMount(){
             let currentComponent = this;
+            console.log(Cookies.get('user'));
             axios.get(apiURL.postURL + "getPosts" , {
                 params:{
                     username: Cookies.get('user')   
@@ -36,7 +37,9 @@ export class Dashboard extends Component {
             event.preventDefault();
             if(this.state.postData !== ''|| undefined || null){
                 axios.post(apiURL.postURL + "addPost" , {
-                    username: Cookies.get('user'),
+                    params:{
+                        username: Cookies.get('user')
+                    },
                     post: this.state.postData    
                 })
                 .then(function (response) {

@@ -2,17 +2,14 @@ const buffer = require("buffer");
 
 
 function encodeBase64(string) {
-    
-    const tokenBuffer =  new buffer.Buffer(string);
-    let token = tokenBuffer.toString('base64');
 
-    return token;
+    let encodeString = buffer.Buffer.from(string).toString('base64');
+    return encodeString;
 }
 
 function decodeBase64(encodeString) {
     
-    const stringBuffer = new buffer.Buffer(encodeString ,'base64');
-    let decodeString = stringBuffer.toString('ascii');
+    let decodeString = buffer.Buffer.from(encodeString,'base64').toString('ascii');
     return decodeString;
 }
 
