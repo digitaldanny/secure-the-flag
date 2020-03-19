@@ -24,19 +24,21 @@ const pool = new Pool(config)
 router.post('/addPost', (req,res)=>{
    
     let username = req.query.username
-    let post = req.body.post
+    let post = req.body.post;
     try {
 
       var usernameValue = encoder.decodeBase64(username);
       
       if(!verifier.verifyUser(usernameValue)){
         res.status(401).send("Refresh Page and Log Back in to work");
+        
       }
 
     }catch(e){
-        res.status(401).send("Refresh Page and Log Back in to work")
+        res.status(401).send("Refresh Page and Log Back in to work");
+        
     }
-    console.log("we here")
+    
     pool.query('INSERT INTO post (username, post) VALUES ($1, $2)', [usernameValue, post], (error, results) => {
       if (error) {
         // throw error;
@@ -72,6 +74,7 @@ router.get('/getPosts', (req,res)=>{
       }
 
       if(results.rows.length >0){
+        results.rows.map(console.log);
       res.status(200).send(results.rows)
       }
     })

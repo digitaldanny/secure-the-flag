@@ -18,13 +18,12 @@ export class Dashboard extends Component {
         componentDidMount(){
             let currentComponent = this;
             console.log(Cookies.get('user'));
-            axios.get(apiURL.postURL + "getPosts" , {
-                params:{
-                    username: Cookies.get('user')   
-                }
+            axios.get(apiURL.postURL + "getPosts" ,null, {
+                params:{ username: Cookies.get('user') }
                 })
                 .then(function (response) {
                     currentComponent.setState({data:response.data})
+                    console.log(response.data);
                 })
                 .catch(function (error) {
                     console.log(error); 
@@ -36,12 +35,11 @@ export class Dashboard extends Component {
             let currentComponent = this;
             event.preventDefault();
             if(this.state.postData !== ''|| undefined || null){
-                axios.post(apiURL.postURL + "addPost" , {
-                    params:{
-                        username: Cookies.get('user')
-                    },
-                    post: this.state.postData    
-                })
+
+                const addParams = {
+                    username : Cookies.get('user')
+                };
+                axios.post(`${apiURL.postURL}addPost`,{post:currentComponent.state.postData},{params:addParams})
                 .then(function (response) {
                     // location.reload()
                     alert(response.data)

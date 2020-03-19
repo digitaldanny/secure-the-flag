@@ -19,7 +19,6 @@ const config = {
     
     pool.query(`SELECT * FROM users WHERE username='${possibleUsername}'`)
     .then((results)=>{
-      console.log(results.rows[0].email);
       if (results.rows[0].username != possibleUsername){
         return false;
       }
