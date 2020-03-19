@@ -64,9 +64,9 @@ const SignIn = (props) => {
                 <form action="" method="post" onSubmit={handleSubmit}>
                    
                     <label htmlFor="username">Username</label>
-                    <input type="text" name="username"  value={username} onChange={handleChange} id="username"/>
+                    <input type="text" name="username" maxLength="15" value={username} onChange={handleChange} id="username"/>
                     <label htmlFor="password">Password</label>
-                    <input type="password" name="password"  value={password} onChange={handleChange} id="password"/>
+                    <input type="password" name="password" maxLength="20"  value={password} onChange={handleChange} id="password"/>
                     <button type="submit" >Submit</button>
                 </form>
                 <button onClick={handleLink}>Sign Up</button>
