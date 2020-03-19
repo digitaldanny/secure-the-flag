@@ -1,0 +1,4 @@
+XSS Attack 1 (Stored attack)
+Email:    ihack@gmail.com
+Username: "</h3><img src="" onError={alert("X")}></img><h3>"
+Password: test

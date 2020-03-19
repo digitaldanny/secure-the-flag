@@ -14,10 +14,10 @@ const Register = (props) =>
 
     // Sanitize the user input from XSS attacks before allowing 'handleSubmit' to 
     // transfer it in an HTTP POST to the server (Reflected XSS).
-    var cleanUsername = Xss.sanitize(username);
-    var cleanPassword = Xss.sanitize(password);
-    var cleanEmail = Xss.sanitize(email);
-    var cleanConfirmPassword = Xss.sanitize(confirmpassword);
+    var cleanUsername = username; //Xss.sanitize(username);
+    var cleanPassword = password; //Xss.sanitize(password);
+    var cleanEmail = email; //Xss.sanitize(email);
+    var cleanConfirmPassword = confirmpassword; //Xss.sanitize(confirmpassword);
 
     /*
      * +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
@@ -31,6 +31,12 @@ const Register = (props) =>
     {
         event.preventDefault();
 
+        // print the XSS sanitized user input for debugging
+        console.log("email: " + cleanEmail);
+        console.log("username: " + cleanUsername);
+        console.log("password: " + cleanPassword);
+        console.log("confirm: " + cleanConfirmPassword);
+
         if(confirmpassword !== password)
         {
             alert("Passwords dont match")
@@ -43,9 +49,9 @@ const Register = (props) =>
             return;
         }
 
-        console.log(apiUrl.signupURL + "signup");
+        console.log("POST to: " + apiUrl.signupURL + "/signup");
 
-        axios.post(apiUrl.signupURL, 
+        axios.post(apiUrl.signupURL + "/signup", 
         {
             email: cleanEmail,
             username: cleanUsername,
@@ -56,10 +62,10 @@ const Register = (props) =>
         {
             alert(response.data);
             // props.history.push("/")
-            setconfirmPassword('')
-            setPassword('')
-            setEmail('')
-            setUsername('')
+            //setconfirmPassword('')
+            //setPassword('')
+            //setEmail('')
+            //setUsername('')
         })
         .catch(function (error) 
         {

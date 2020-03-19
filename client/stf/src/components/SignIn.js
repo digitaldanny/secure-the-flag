@@ -4,6 +4,7 @@ import apiUrl from '../config/keys'
 import authApi from './authApi/authApi'
 import Cookies from 'js-cookie'
 import { withRouter } from 'react-router-dom';
+import LoggedInUser from '../config/LoggedInUser.js'
 import Xss from './xss.js'; // class of functions to prevent XSS attacks through signin page.
 
 const SignIn = (props) => 
@@ -17,8 +18,9 @@ const SignIn = (props) =>
   
     // Sanitize the user input from XSS attacks before allowing 'handleSubmit' to 
     // transfer it in an HTTP POST to the server (Reflected XSS).
-    var cleanUsername = Xss.sanitize(username);
-    var cleanPassword = Xss.sanitize(password);
+    // TEST ATTACK: <script>alert('XSS!');</script>
+    var cleanUsername = username; //Xss.sanitize(username);
+    var cleanPassword = password; //Xss.sanitize(password);
 
     /*
      * +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
@@ -32,6 +34,10 @@ const SignIn = (props) =>
     {
         event.preventDefault();
 
+        // print the XSS sanitized user input for debugging
+        console.log("username: " + cleanUsername);
+        console.log("password: " + cleanPassword);
+
         // POST username/password signin to server.
         axios.post(apiUrl.signinURL + "/signin" , {
            
@@ -41,9 +47,9 @@ const SignIn = (props) =>
         })
         .then(function (response) 
         {
-            console.log("SERVER RESPONSE: " + response);
             if(response.data.login)
             {
+                LoggedInUser.username = cleanUsername;
                 Auth.setAuth(true)
                 Cookies.set("user",response.data.token,{expires:inThirtyMinutes})
             }
@@ -54,7 +60,6 @@ const SignIn = (props) =>
         })
         .catch(function (error) 
         {
-            console.log("NO RESPONSE FROM SERVER!");
             console.log(error);
         });
     }

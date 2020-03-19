@@ -15,15 +15,19 @@ const config = {
   host: conString.hostname,
   port: conString.port,
   database: conString.pathname.split('/')[1],
-  ssl: true
+  ssl: {
+    rejectUnauthorized : false
+  }
+  //ssl: true,
 };
 const saltRounds = 10
 const pool = new Pool(config)
 
-
 router.post('/signup', (req,res)=>{
-   
+    console.log("Entered users./signup");
     const { username, email,password} = req.body
+    console.log("Registering user: " + username);
+    console.log("Registering password: " + password);
     const check = checkUser(username)
     if(check){
     const salt = bcrypt.genSaltSync(saltRounds);
@@ -31,6 +35,7 @@ router.post('/signup', (req,res)=>{
     pool.query('INSERT INTO users (username, email,password) VALUES ($1, $2,$3)', [username, email,hash], (error, results) => {
       if (error) {
         // throw error;
+        console.log("THERE WAS AN ERROR SIGNING UP");
         res.send(error.detail);
         return;
       }
@@ -45,10 +50,13 @@ router.post('/signup', (req,res)=>{
 })
 
 router.post('/signin', (req,response)=>{
-   
+    console.log("Entered users./signin");
     const { username,password } = req.body
-     //Removes quotes,parenthesis,dashes and semi colons from string
-    var strWithOutQuotes= username.replace(/[;()'"-]+/g, '')
+    //Removes quotes,parenthesis,dashes and semi colons from string
+    //var strWithOutQuotes= username.replace(/[;()'"-]+/g, '')
+    //pool.query(`SELECT * FROM users WHERE username= '${strWithOutQuotes}'`,  (error, results) => {
+    console.log("UNPROTECTED SIGN IN: " + username); // DEBUG
+    var strWithOutQuotes = username // DEBUG
     pool.query(`SELECT * FROM users WHERE username= '${strWithOutQuotes}'`,  (error, results) => {
       if (error) {
         throw error

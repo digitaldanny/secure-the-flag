@@ -45,13 +45,13 @@ class SearchPost extends Component {
             } 
             
         }
+
     render() {
         const cond = this.state.data.length;
         let listItems ;
         if(cond > 0){
         listItems = (this.state.data.map((item) =>
         <div key={item.user_id} className="col s6 m6">
-    
             <div className="card horizontal">
             <div className="card-stacked">
             <div className="card-header">

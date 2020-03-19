@@ -14,13 +14,16 @@ const config = {
   host: conString.hostname,
   port: conString.port,
   database: conString.pathname.split('/')[1],
-  ssl: true
+  ssl: {
+    rejectUnauthorized : false
+  }
+  //ssl: true,
 };
 
 const pool = new Pool(config)
 
 router.post('/addPost', (req,res)=>{
-   
+   console.log("./addPost");
     let username = req.body.username
     let post = req.body.post
     try {
@@ -36,12 +39,11 @@ router.post('/addPost', (req,res)=>{
       }
     
     res.status(200).send("Added Post")
-    
     })
 })
 
 router.get('/getPosts', (req,res)=>{
-   
+  console.log("./getPosts");
     const { username } = req.query
    
     try {
@@ -62,6 +64,7 @@ router.get('/getPosts', (req,res)=>{
 
 router.get('/getOtherPost', (req,res)=>{
    
+  console.log("./getOtherPosts");
     const { username } = req.query
    //Strong version wraps it as a string
     //Removes quoted from string
