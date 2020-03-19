@@ -103,7 +103,7 @@ export class Dashboard extends Component {
                 <h6 style={{paddingLeft:10}} className="header">{item.user_id}</h6>
                 </div>
                     <div className="card-content">
-                    {item.post}
+                    <div dangerouslySetInnerHTML={{__html: item.post}}/>
                     </div>
                 </div>
                 </div>
@@ -113,7 +113,6 @@ export class Dashboard extends Component {
         return (
             <div className="container row">
             <h1>Dashboard</h1>
-            <h3>Welcome, {LoggedInUser.username}!</h3>
             <Navbar></Navbar>
             <div className="col s6 m6 lg6">
             <SearchPost/>
@@ -131,8 +130,5 @@ export class Dashboard extends Component {
         )
     }
 }
-
-// <h3>Welcome, {LoggedInUser.username}!</h3>
-// </h3><img src="y" onError={alert("X")}></img><h3> -- WORKING DASHBOARD XSS VULNERABILITY
 
 export default Dashboard
