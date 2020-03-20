@@ -4,8 +4,6 @@ import apiUrl from '../config/keys'
 import authApi from './authApi/authApi'
 import Cookies from 'js-cookie'
 import { withRouter } from 'react-router-dom';
-import LoggedInUser from '../config/LoggedInUser.js'
-import Xss from './xss.js'; // class of functions to prevent XSS attacks through signin page.
 
 const SignIn = (props) => 
 {
@@ -15,12 +13,6 @@ const SignIn = (props) =>
     // const [token, setToken] = useState(false);
     var inThirtyMinutes = new Date(new Date().getTime() + 30 * 60 * 1000);
     // Similar to componentDidMount and componentDidUpdate:
-  
-    // Sanitize the user input from XSS attacks before allowing 'handleSubmit' to 
-    // transfer it in an HTTP POST to the server (Reflected XSS).
-    // TEST ATTACK: <script>alert('XSS!');</script>
-    var cleanUsername = username; //Xss.sanitize(username);
-    var cleanPassword = password; //Xss.sanitize(password);
 
     /*
      * +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
@@ -35,21 +27,20 @@ const SignIn = (props) =>
         event.preventDefault();
 
         // print the XSS sanitized user input for debugging
-        console.log("username: " + cleanUsername);
-        console.log("password: " + cleanPassword);
+        console.log("username: " + username);
+        console.log("password: " + password);
 
         // POST username/password signin to server.
         axios.post(apiUrl.signinURL + "/signin" , {
            
-            username: cleanUsername,
-            password: cleanPassword,
+            username: username,
+            password: password,
           
         })
         .then(function (response) 
         {
             if(response.data.login)
             {
-                LoggedInUser.username = cleanUsername;
                 Auth.setAuth(true)
                 Cookies.set("user",response.data.token,{expires:inThirtyMinutes})
             }

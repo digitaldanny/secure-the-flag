@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import axios from 'axios'
 import apiUrl from '../config/keys'
 import { withRouter } from 'react-router-dom';
-import Xss from './xss.js'; // class of functions to prevent XSS attacks through signin page.
 
 const Register = (props) => 
 {
@@ -11,13 +10,6 @@ const Register = (props) =>
     const [password, setPassword] = useState('');
     const [confirmpassword, setconfirmPassword] = useState('');
     const [email, setEmail] = useState('');
-
-    // Sanitize the user input from XSS attacks before allowing 'handleSubmit' to 
-    // transfer it in an HTTP POST to the server (Reflected XSS).
-    var cleanUsername = username; //Xss.sanitize(username);
-    var cleanPassword = password; //Xss.sanitize(password);
-    var cleanEmail = email; //Xss.sanitize(email);
-    var cleanConfirmPassword = confirmpassword; //Xss.sanitize(confirmpassword);
 
     /*
      * +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
@@ -32,10 +24,10 @@ const Register = (props) =>
         event.preventDefault();
 
         // print the XSS sanitized user input for debugging
-        console.log("email: " + cleanEmail);
-        console.log("username: " + cleanUsername);
-        console.log("password: " + cleanPassword);
-        console.log("confirm: " + cleanConfirmPassword);
+        console.log("email: " + email);
+        console.log("username: " + username);
+        console.log("password: " + password);
+        console.log("confirm: " + confirmpassword);
 
         if(confirmpassword !== password)
         {
@@ -53,10 +45,10 @@ const Register = (props) =>
 
         axios.post(apiUrl.signupURL + "/signup", 
         {
-            email: cleanEmail,
-            username: cleanUsername,
-            password: cleanPassword,
-            confirmpassword: cleanConfirmPassword
+            email: email,
+            username: username,
+            password: password,
+            confirmpassword: confirmpassword
         })
         .then(function (response) 
         {

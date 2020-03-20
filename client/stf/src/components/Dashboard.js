@@ -4,9 +4,9 @@ import axios from 'axios'
 import Navbar from './Navbar'
 import React, { Component } from 'react'
 import SearchPost from './SearchPost'
-import LoggedInUser from '../config/LoggedInUser.js'
 
 export class Dashboard extends Component {
+    
     constructor(props)
     {
         super(props)

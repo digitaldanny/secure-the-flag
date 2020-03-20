@@ -53,10 +53,7 @@ router.post('/signin', (req,response)=>{
     console.log("Entered users./signin");
     const { username,password } = req.body
     //Removes quotes,parenthesis,dashes and semi colons from string
-    //var strWithOutQuotes= username.replace(/[;()'"-]+/g, '')
-    //pool.query(`SELECT * FROM users WHERE username= '${strWithOutQuotes}'`,  (error, results) => {
-    console.log("UNPROTECTED SIGN IN: " + username); // DEBUG
-    var strWithOutQuotes = username // DEBUG
+    var strWithOutQuotes= username.replace(/[;()'"-]+/g, '')
     pool.query(`SELECT * FROM users WHERE username= '${strWithOutQuotes}'`,  (error, results) => {
       if (error) {
         throw error

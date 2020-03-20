@@ -8,7 +8,7 @@
  * +=====+=====+=====+=====+=====+=====+=====+=====+=====+=====+=====+=====+
 */
 
-export default class Xss
+class Xss
 {
   /*
    * +=====+=====+=====+=====+=====+=====+=====+=====+=====+=====+=====+=====+=====+=====+
@@ -29,22 +29,31 @@ export default class Xss
    * 
    * INPUTS: danger - String input by the user.
    * 
-   * RETURN: safe - Modified input string (danger) after performing sanitation.
+   * RETURN: [safe, stringChanged]
+   * mod - Modified input string (danger) after performing sanitation.
+   * inEqOut - true if the input string being returned unchanged.
    * +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
   */
-  static sanitize (danger)
+  static sanitize = function(danger)
   {
     try
     {
       var mod;
       mod = Xss.escape(danger); // convert dangerous characters (<>"'/&) with safe alternatives.
       mod = Xss.removeHandlersRec(mod); // recursively remove event handler names (such as ONMOUSEOVER, etc)
-      return mod;
+
+      // return a variable that determines if the string had been changed during sanitization.
+      if (mod.localeCompare(danger) === 0)
+      {
+        console.log("Input equals the output");
+        return {mod:mod, inEqOut:true}
+      }
+      return {mod:mod, inEqOut:false};
     }
     catch
     {
       console.log("ERROR (danger): input cannot be sanitized.");
-      return danger;
+      return {mod:danger, inEqOut:true};
     }
   }
 
@@ -74,12 +83,25 @@ export default class Xss
       '>': '&gt;',
       '"': '&quot;',
       "'": '&#x27;',
-      '/': '&#x2F;',
-      ';': ''
+      '/': '&#x2F;'
     };
 
+    var safe = danger;
+
     // replace all occurances of dangerous characters to their safe alternatives.
-    return danger.replace(/[&<>"'/]/g, i => conversions[i]);
+    //return danger.replace(/[&<>"'/]/g, i => conversions[i]);
+    for (var key in conversions)
+    {
+      // create a regular expression to convert all occurances of the dangerous characters.
+      var searchMask = key;
+      var replaceMask = conversions[key];
+      var regEx = new RegExp(searchMask, "gi"); 
+
+      // modify the input string
+      safe = safe.replace(regEx, replaceMask);
+    }
+
+    return safe;
   }
 
   /*
@@ -96,18 +118,26 @@ export default class Xss
   {
     var mod = danger;
     var modified = false;
+
+    // contains the keywords that this sanitizer function will remove.
     var keywords = 
     [
       'onchange', 'onclick', 'onmouseover', 'onmouseout', 'onkeydown', 'onload', 'onmouseleave', 'onwheel', 'onmouseup',
-      'onload', 'onpaste', 'oncopy', 'onreset'
+      'onload', 'onpaste', 'oncopy', 'onreset', 'onerror'
     ];
 
     // Remove keywords regardless of capitalization and mark 'modified' = true if
     // the string gets modified.
     for (var i = 0; i < keywords.length; i++)
     {
-      // remove the dangerous keywords included in the list of keywords above.
-      mod = mod.replace(keywords[i], ''); 
+
+      // create a regular expression to convert all occurances of the dangerous characters.
+      var searchMask = keywords[i];
+      var replaceMask = ''; // delete the searchmask 
+      var regEx = new RegExp(searchMask, "gi"); 
+
+      // modify the input string
+      mod = mod.replace(regEx, replaceMask);
 
       // If the modified string and the original input do not match, a keyword was removed.
       if (mod.localeCompare(danger) !== 0)
@@ -125,3 +155,5 @@ export default class Xss
     return Xss.removeHandlersRec(mod);
   }
 }
+
+module.exports = {Xss}

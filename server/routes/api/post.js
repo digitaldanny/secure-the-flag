@@ -7,6 +7,7 @@ const Pool = require('pg').Pool
 var jwt = require('jsonwebtoken');
 var conString = url.parse(process.env.ELEPHANTSQL_URL || db)
 const auth = conString.auth.split(':');
+const Xss = require('./helpers/xss').Xss;
 
 const config = {
   user: auth[0],
@@ -22,24 +23,59 @@ const config = {
 
 const pool = new Pool(config)
 
-router.post('/addPost', (req,res)=>{
-   console.log("./addPost");
-    let username = req.body.username
-    let post = req.body.post
-    try {
+/* +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
+ * SUMMARY: addPost
+ * This route will insert the requested post from the dashboard into the SQL table.
+ * The route will return whether the insertion was successful or any changes to the input
+ * POST were changed because they were possibly dangerous.
+ * +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
+*/
+router.post('/addPost', (req,res)=>
+{
+  console.log("./addPost");
+  let username = req.body.username
+  let post = req.body.post
+
+  // By default, the response to a successful insertion into the SQL table
+  // is "Added Post." If the post was altered by the XSS sanitizer, the response
+  // is changed to inform user of the changes.
+  var responseOnSuccess = "Added Post";
+
+  // ********************* XSS ADDITION HERE ***********************
+  // perform XSS sanitation on new post
+  var clean = Xss.sanitize(post);
+  console.log("Dirty In: " + post);
+  console.log("Clean Out: " + clean.mod);
+  console.log("inEqOut: " + clean.inEqOut);
+  if (!clean.inEqOut)
+  {
+    post = clean.mod;
+    responseOnSuccess = "Dangerous POST Saved as: " + clean.mod;
+  }
+  // *********************** XSS ENDS HERE *************************
+
+  // Verify that the username is valid.
+  try 
+  {
     var usernameValue = jwt.verify(username, 'secret').data;
-    }catch(e){
-        res.status(401).send("Refresh Page and Log Back in to work")
+  }
+  catch(e)
+  {
+    res.status(401).send("Refresh Page and Log Back in to work")
+  }
+
+  // Save the sanitized POST value in the SQL table for the sender's username.
+  pool.query('INSERT INTO post (username, post) VALUES ($1, $2)', [usernameValue, post], (error, results) => 
+  {
+    if (error) {
+      // throw error;
+      res.send(error.detail);
+      return;
     }
-    pool.query('INSERT INTO post (username, post) VALUES ($1, $2)', [usernameValue, post], (error, results) => {
-      if (error) {
-        // throw error;
-        res.send(error.detail);
-        return;
-      }
-    
-    res.status(200).send("Added Post")
-    })
+  
+    // if inserting post into SQL table is successful, respond success message.
+    res.status(200).send(responseOnSuccess);
+  })
 })
 
 router.get('/getPosts', (req,res)=>{
