@@ -1,3 +1,6 @@
+// UPDATE: 3/18/2020
+// Added XSS vulnerability when adding posts
+
 import apiURL from '../config/keys'
 import Cookies from 'js-cookie'
 import axios from 'axios'

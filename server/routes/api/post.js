@@ -23,7 +23,8 @@ const config = {
 
 const pool = new Pool(config)
 
-/* +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
+/* 
+ * +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
  * SUMMARY: addPost
  * This route will insert the requested post from the dashboard into the SQL table.
  * The route will return whether the insertion was successful or any changes to the input
