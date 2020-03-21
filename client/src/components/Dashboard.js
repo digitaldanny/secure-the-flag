@@ -18,7 +18,7 @@ export class Dashboard extends Component {
         componentDidMount(){
             let currentComponent = this;
             console.log(Cookies.get('user'));
-            axios.get(apiURL.postURL + "getPosts" ,null, {
+            axios.get(apiURL.postURL + "getPosts" , {
                 params:{ username: Cookies.get('user') }
                 })
                 .then(function (response) {

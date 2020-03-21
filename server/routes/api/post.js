@@ -68,16 +68,26 @@ router.get('/getPosts', (req,res)=>{
        res.status(401).send("Refresh Page e Log Back in to work")
     }
     // console.log(usernameValue)
-    pool.query(`SELECT * FROM post WHERE username= '${usernameValue}' `, (error, results) => {
-      if (error) {
-        throw error
-      }
+    // pool.query(`SELECT * FROM post WHERE username= '${usernameValue}' `, (error, results) => {
+    //   if (error) {
+    //     throw error
+    //   }
 
+    //   if(results.rows.length >0){
+    //     results.rows.map(console.log);
+    //   res.status(200).json(results.rows)
+    //   }
+    // });
+
+    pool.query(`SELECT * FROM post WHERE username= '${usernameValue}'`)
+    .then((results)=>{
       if(results.rows.length >0){
-        results.rows.map(console.log);
-      res.status(200).send(results.rows)
+        res.status(200).json(results.rows);
       }
     })
+    .catch((error)=>{
+      throw error;
+    });
     // res.status(401).send("Refresh Page e Log Back in to work")
   
 })
@@ -108,24 +118,27 @@ router.get('/getOtherPost', (req,res)=>{
     if(!verifier.verifyUser(usernameValue)){
       res.status(401).send("Refresh Page and Log Back in to work");
     }
+    else{
+   
+      pool.query(`SELECT * FROM post WHERE username= '${username}' `, (error, results) => {
+        if (error) {
+          throw error
+        }
+  
+        if(results.rows.length >0){
+          res.status(200).send(results.rows)
+        }else{
+          res.status(204).send(results.rows)
+        }
+      })
+     
+    }
 
  
   }catch(e){
-     res.status(401).send("Refresh Page e Log Back in to work")
+     res.status(401).send("Refresh Page e Log Back in to work");
+     
     } 
-   
-   pool.query(`SELECT * FROM post WHERE username= '${username}' `, (error, results) => {
-      if (error) {
-        throw error
-      }
-
-      if(results.rows.length >0){
-        res.status(200).send(results.rows)
-      }else{
-        res.status(204).send(results.rows)
-      }
-    })
-   
   
 })
 
