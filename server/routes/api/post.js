@@ -21,43 +21,68 @@ const pool = new Pool(config)
 
 router.post('/addPost', (req,res)=>{
    
-    let username = req.body.username
-    let post = req.body.post
-    try {
-    var usernameValue = jwt.verify(username, 'secret').data;
-    }catch(e){
-        res.status(401).send("Refresh Page and Log Back in to work")
-    }
-    pool.query('INSERT INTO post (username, post) VALUES ($1, $2)', [usernameValue, post], (error, results) => {
-      if (error) {
-        // throw error;
-        res.send(error.detail);
-        return;
-      }
+    let username = req.body.username;
+    let post = req.body.post;
+
+    jwt.verify(username,'secret',(error,usernameValue)=>{
+
+        if(error){
+          res.status(401).send("Refresh Page and Log Back in to work");
+        }
+        else{
+          pool.query('INSERT INTO post (username, post) VALUES ($1, $2)', [usernameValue.data, post], (error, results) => {
+            if (error) {
+
+              throw error;
+            }
+        
+          res.status(200).send("Added Post")
+        
+           });      
+        }
+    });
+
+    // try {
+    // var usernameValue = jwt.verify(username, 'secret').data;
+    // }catch(e){
+    //     res.status(401).send("Refresh Page and Log Back in to work")
+    // }
+    // pool.query('INSERT INTO post (username, post) VALUES ($1, $2)', [usernameValue, post], (error, results) => {
+    //   if (error) {
+    //     // throw error;
+    //     res.send(error.detail);
+    //     return;
+    //   }
     
-    res.status(200).send("Added Post")
+    // res.status(200).send("Added Post")
     
-    })
+    // })
 })
 
 router.get('/getPosts', (req,res)=>{
    
-    const { username } = req.query
-   
-    try {
-    var usernameValue = jwt.verify(username, 'secret').data;
-   
-    }catch(e){}
-    pool.query(`SELECT * FROM post WHERE username= '${usernameValue}' `, (error, results) => {
-      if (error) {
-        throw error
-      }
+    const { username } = req.query;
 
-      if(results.rows.length >0){
-      res.status(200).send(results.rows)
+    jwt.verify(username,'secret',(err,usernameValue)=>{
+      if(err){
+        res.status(401).send("Refresh Page and Log Back in to work");
+      }else{
+        
+        pool.query(`SELECT * FROM post WHERE username= '${usernameValue.data}' `, (error, results) => {
+          if (error) {
+            throw error
+          }
+   
+          if(results.rows.length >0){
+          res.status(200).send(results.rows)
+          }
+       });
+    
       }
-    })
-})
+    
+    });
+
+});
 
 
 router.get('/getOtherPost', (req,res)=>{
