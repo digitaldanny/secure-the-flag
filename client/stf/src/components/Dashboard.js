@@ -37,7 +37,8 @@ export class Dashboard extends Component {
             if(this.state.postData !== ''|| undefined || null){
                 axios.post(apiURL.postURL + "addPost" , {
                     username: Cookies.get('user'),
-                    post: this.state.postData    
+                    post: this.state.postData,
+                    csrf_token: Cookies.get('csrf_token')
                 })
                 .then(function (response) {
                     // location.reload()
