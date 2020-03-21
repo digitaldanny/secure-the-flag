@@ -20,8 +20,16 @@ const config = {
 const pool = new Pool(config)
 
 router.post('/addPost', (req,res)=>{
-   
+
+    let csrf_token = req.body.csrf_token
     let username = req.body.username
+
+    bcrypt.compare(username, csrf_token, function(err, result) {
+      if (!result) {
+        throw "csrf_token does not match. Possible csrf attack";
+      }
+    });
+
     let post = req.body.post
     try {
     var usernameValue = jwt.verify(username, 'secret').data;
@@ -34,19 +42,19 @@ router.post('/addPost', (req,res)=>{
         res.send(error.detail);
         return;
       }
-    
+
     res.status(200).send("Added Post")
-    
+
     })
 })
 
 router.get('/getPosts', (req,res)=>{
-   
+
     const { username } = req.query
-   
+
     try {
     var usernameValue = jwt.verify(username, 'secret').data;
-   
+
     }catch(e){}
     pool.query(`SELECT * FROM post WHERE username= '${usernameValue}' `, (error, results) => {
       if (error) {
@@ -61,7 +69,7 @@ router.get('/getPosts', (req,res)=>{
 
 
 router.get('/getOtherPost', (req,res)=>{
-   
+
     const { username } = req.query
    //Strong version wraps it as a string
     //Removes quoted from string
@@ -88,16 +96,16 @@ router.get('/getOtherPost', (req,res)=>{
         }
         else if(results.rows[0].username === username){
             //if false user in db
-        
+
         return false;
         }else{
             //IF true then username not in db
-        
+
             val = true;
         }
         }
     )
-        
+
         return true;
     }
 
