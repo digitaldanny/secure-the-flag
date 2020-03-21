@@ -9,7 +9,8 @@ function encodeBase64(string) {
 
 function decodeBase64(encodeString) {
     
-    let decodeString = new buffer.Buffer(encodeString,'base64');
+    //let decodeString = new buffer.Buffer(encodeString,'base64');
+    let decodeString = buffer.Buffer.from(encodeString,'base64');
     return decodeString.toString('ascii');
 }
 

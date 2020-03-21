@@ -25,122 +25,96 @@ router.post('/addPost', (req,res)=>{
    
     let username = req.query.username
     let post = req.body.post;
-    try {
-
-      var usernameValue = encoder.decodeBase64(username);
-      
-      if(!verifier.verifyUser(usernameValue)){
-        res.status(401).send("Refresh Page and Log Back in to work");
-        
-      }
-
-    }catch(e){
-        res.status(401).send("Refresh Page and Log Back in to work");
-        
-    }
+    let verified;
+    let usernameValue = encoder.decodeBase64(username);
     
-    pool.query('INSERT INTO post (username, post) VALUES ($1, $2)', [usernameValue, post], (error, results) => {
-      if (error) {
-        // throw error;
-        res.send(error.detail);
-        return;
-      }
-    
-    res.status(200).send("Added Post")
-    
-    })
-})
-
-router.get('/getPosts', (req,res)=>{
-   
-    const username  = req.query.username;
-    console.log(`req.params: ${req.query.username}`);
-    
-    try {
-      var usernameValue = encoder.decodeBase64(username);
-      
-      if(!verifier.verifyUser(usernameValue)){
-        res.status(401).send("Refresh Page and Log Back in to work");
-      }
-
-   
-    }catch(e){
-       res.status(401).send("Refresh Page e Log Back in to work")
-    }
-    // console.log(usernameValue)
-    // pool.query(`SELECT * FROM post WHERE username= '${usernameValue}' `, (error, results) => {
-    //   if (error) {
-    //     throw error
-    //   }
-
-    //   if(results.rows.length >0){
-    //     results.rows.map(console.log);
-    //   res.status(200).json(results.rows)
-    //   }
-    // });
-
-    pool.query(`SELECT * FROM post WHERE username= '${usernameValue}'`)
+    // first verify user 
+    pool.query(`SELECT * FROM users WHERE username='${usernameValue}'`)
     .then((results)=>{
-      if(results.rows.length >0){
-        res.status(200).json(results.rows);
+      if (results.rows[0].username != usernameValue){
+          verified= false;
+      }else{
+        verified = true;
       }
+      
     })
     .catch((error)=>{
       throw error;
-    });
-    // res.status(401).send("Refresh Page e Log Back in to work")
+    })
+    .finally(()=>{
+      // after verification insert post
+      if(verified){
+        pool.query(`INSERT INTO post (username, post) VALUES ('${usernameValue}', '${post}')`)
+        .then((results)=>{
+          res.status(200).send("Added Post");
+        })
+        .catch((error)=>{
+            res.send(error);
+        });
+        
+      }
+      else{
+        res.status(401).send("Refresh Page and Log Back in to work");
+      }
+
+    }) 
+
+});
+
+router.get('/getPosts',(req,res)=>{
+
+  const username= req.query.username;
+  let usernameValue = encoder.decodeBase64(username);
   
-})
+  let verified;
+  pool.query(`SELECT * FROM users WHERE username='${usernameValue}'`)
+  .then((results)=>{
+    if (results.rows[0].username != usernameValue){
+        verified= false;
+    }else{
+      verified = true;
+    }
+    
+  })
+  .catch((error)=>{
+    throw error;
+  }).finally(()=>{
+
+    if(verified){
+
+      pool.query(`SELECT * FROM post WHERE username= '${usernameValue}'`)
+      .then((results)=>{
+        if(results.rows.length >0){
+          res.status(200).json(results.rows);
+        }
+      })
+      .catch((error)=>{
+        throw error;
+      });
+    
+    }else{
+      res.status(401).send("Refresh Page and Log Back in to work");
+    }   
+    
+  });
+
+});
 
 
 router.get('/getOtherPost', (req,res)=>{
    
     const username = req.query.username;
-
-    //Strong version wraps it as a string
-    //Removes quoted from string
-    //var strWithOutQuotes= username.replace(/[()/-/'"]+/g, '')
     
-    // pool.query(`SELECT * FROM post WHERE username= '${username} '`, (error, results) => {
-    //     if (error) {
-    //       throw error
-    //     }
-  
-    //     if(results.rows.length >0){
-    //     res.status(200).send(results.rows)
-    //     }
-    //   })
-     
-   //This will break if you use 105' OR '1'='1 || a' or 'a' = 'a
-   try {
-    var usernameValue = encoder.decodeBase64(username);
-    
-    if(!verifier.verifyUser(usernameValue)){
-      res.status(401).send("Refresh Page and Log Back in to work");
-    }
-    else{
-   
-      pool.query(`SELECT * FROM post WHERE username= '${username}' `, (error, results) => {
-        if (error) {
-          throw error
-        }
-  
-        if(results.rows.length >0){
-          res.status(200).send(results.rows)
-        }else{
-          res.status(204).send(results.rows)
-        }
-      })
-     
-    }
+    pool.query(`SELECT * FROM post WHERE username= '${username}'`)
+    .then((results)=>{
 
- 
-  }catch(e){
-     res.status(401).send("Refresh Page e Log Back in to work");
-     
-    } 
-  
-})
+          res.status(200).status(results.rows);
+        }
+    )
+    .catch((error)=>{
+      throw error;
+    });
+});
 
     checkUser = (username) => {
     let val = true;

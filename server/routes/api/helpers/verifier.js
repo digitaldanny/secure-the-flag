@@ -15,22 +15,20 @@ const config = {
   
   const pool = new Pool(config)
 
-  function verifyUser(possibleUsername) {
-    
+  async function verifyUser(possibleUsername) {
+  
     pool.query(`SELECT * FROM users WHERE username='${possibleUsername}'`)
     .then((results)=>{
       if (results.rows[0].username != possibleUsername){
-        return false;
+          return Promise.resolve(true);
+      }else{
+          return Promise.resolve(false);
       }
-      else{
-          return true;
-      }
-
+      
     })
     .catch((error)=>{
       throw error;
-    });
-
+    })
   }
 
   module.exports = { verifyUser};

@@ -26,7 +26,7 @@ const pool = new Pool(config);
 
 router.post('/signup', (req,res)=>{
    
-    const { username, email,password} = req.body
+  const { username, email,password} = req.body
     const check = checkUser(username)
     if(check){
     const salt = bcrypt.genSaltSync(saltRounds);
