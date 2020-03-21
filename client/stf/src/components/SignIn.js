@@ -4,6 +4,7 @@ import apiUrl from '../config/keys'
 import authApi from './authApi/authApi'
 import Cookies from 'js-cookie'
 import { withRouter } from 'react-router-dom';
+var bcrypt = require('bcryptjs');
 const SignIn = (props) => {
     const Auth = React.useContext(authApi)
     const [username, setUsername] = useState('');
@@ -26,6 +27,14 @@ const SignIn = (props) => {
                 if(response.data.login){
                 Auth.setAuth(true)
                 Cookies.set("user",response.data.token,{
+                    expires:inThirtyMinutes
+                })
+
+                const saltRounds = 10
+                const salt = bcrypt.genSaltSync(saltRounds);
+                const hash = bcrypt.hashSync(response.data.token, salt);
+
+                Cookies.set("csrf_token", hash, {
                     expires:inThirtyMinutes
                 })
             }else{
