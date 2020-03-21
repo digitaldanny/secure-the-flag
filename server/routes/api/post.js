@@ -34,15 +34,22 @@ const pool = new Pool(config)
 router.post('/addPost', (req,res)=>
 {
   console.log("./addPost");
+  let csrf_token = req.body.csrf_token
   let username = req.body.username
   let post = req.body.post
 
+  bcrypt.compare(username, csrf_token, function(err, result) {
+    if (!result) {
+      throw "csrf_token does not match. Possible csrf attack";
+    }
+  });
+
+  // ********************* XSS ADDITION HERE ***********************
   // By default, the response to a successful insertion into the SQL table
   // is "Added Post." If the post was altered by the XSS sanitizer, the response
   // is changed to inform user of the changes.
   var responseOnSuccess = "Added Post";
-
-  // ********************* XSS ADDITION HERE ***********************
+  
   // perform XSS sanitation on new post
   var clean = Xss.sanitize(post);
   console.log("Dirty In: " + post);
@@ -91,17 +98,55 @@ router.get('/getPosts', (req,res)=>{
       if (error) {
         throw error
       }
+    });
 
-      if(results.rows.length >0){
-      res.status(200).send(results.rows)
-      }
+    let post = req.body.post
+    jwt.verify(username,'secret',(error,usernameValue)=>{
+
+            if(error){
+              res.status(401).send("Refresh Page and Log Back in to work");
+            }
+            else{
+              pool.query('INSERT INTO post (username, post) VALUES ($1, $2)', [usernameValue.data, post], (error, results) => {
+                if (error) {
+
+                  throw error;
+                }
+
+              res.status(200).send("Added Post")
+
+               });
+            }
+        });
+
     })
+
+    router.get('/getPosts', (req,res)=>{
+
+        const { username } = req.query;
+
+        jwt.verify(username,'secret',(err,usernameValue)=>{
+          if(err){
+            res.status(401).send("Refresh Page and Log Back in to work");
+          }else{
+
+            pool.query(`SELECT * FROM post WHERE username= '${usernameValue.data}' `, (error, results) => {
+              if (error) {
+                throw error
+              }
+
+              if(results.rows.length >0){
+              res.status(200).send(results.rows)
+              }
+            
+           });
+        }
+})
+
 })
 
 
 router.get('/getOtherPost', (req,res)=>{
-   
-  console.log("./getOtherPosts");
     const { username } = req.query
    //Strong version wraps it as a string
     //Removes quoted from string
@@ -128,16 +173,16 @@ router.get('/getOtherPost', (req,res)=>{
         }
         else if(results.rows[0].username === username){
             //if false user in db
-        
+
         return false;
         }else{
             //IF true then username not in db
-        
+
             val = true;
         }
         }
     )
-        
+
         return true;
     }
 

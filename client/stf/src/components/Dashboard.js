@@ -19,6 +19,33 @@ export class Dashboard extends Component {
             user:''
         }
     }
+  
+        handleSubmit = (event) => 
+        {
+            // console.log(postData)
+            let currentComponent = this;
+            event.preventDefault();
+            if(this.state.postData !== ''|| undefined || null){
+                axios.post(apiURL.postURL + "addPost" , {
+                    username: Cookies.get('user'),
+                    post: this.state.postData,
+                    csrf_token: Cookies.get('csrf_token')
+                })
+                .then(function (response) {
+                    // location.reload()
+                    alert(response.data)
+                    currentComponent.setState({postData:''})
+                    window.location.reload(false);
+                  
+                })
+                .catch(function (error) {
+                    console.log(error); 
+                });
+            }
+            else{
+                alert("Enter Post First")
+            }
+        }
 
     componentDidMount()
     {
@@ -35,43 +62,6 @@ export class Dashboard extends Component {
         .catch(function (error) {
             console.log(error); 
         });
-    }
-
-    /*
-     * +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
-     * SUMMARY: handleSubmit
-     * This event is triggered when the Dashboard.post button is pressed.
-     * +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
-    */
-    handleSubmit = (event) => 
-    {
-        console.log("Entered Dashboard.handleSubmit");
-        // console.log(postData)
-        let currentComponent = this;
-        event.preventDefault();
-        if(this.state.postData !== ''|| undefined || null)
-        {
-            axios.post(apiURL.postURL + "addPost" , 
-            {
-                username: Cookies.get('user'),
-                post: this.state.postData    
-            })
-            .then(function (response) 
-            {
-                // location.reload()
-                alert(response.data);
-                currentComponent.setState({postData:''})
-                window.location.reload(false);
-            })
-            .catch(function (error) 
-            {
-                console.log(error); 
-            });
-        }
-        else
-        {
-            alert("Enter Post First")
-        }
     }
 
     /*
@@ -117,13 +107,14 @@ export class Dashboard extends Component {
             <div className="container row">
             <h1>Dashboard</h1>
             <Navbar></Navbar>
-            <div className="col s6 m6 lg6">
+            <div className="col s12 m6 lg6">
             <SearchPost/>
             </div>
-            <div className="col s6 m6 lg6">
+            <div className="col s12 m6 lg6 row">
            
             {/* <h1 onClick={showPost}>Hit Me</h1> */}
             <form style={{marginTop:20}} action="" onSubmit={this.handleSubmit}>
+            <label>Enter Post Data </label>
             <textarea  type="textarea" value={this.state.postData} onChange={this.handleChange} name="post" id="post"/>
             <button type="submit">Post</button>
             </form>

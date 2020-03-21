@@ -4,9 +4,11 @@ import apiUrl from '../config/keys'
 import authApi from './authApi/authApi'
 import Cookies from 'js-cookie'
 import { withRouter } from 'react-router-dom';
+var bcrypt = require('bcryptjs');
 
 const SignIn = (props) => 
 {
+  
     const Auth = React.useContext(authApi)
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -42,10 +44,19 @@ const SignIn = (props) =>
             if(response.data.login)
             {
                 Auth.setAuth(true)
-                Cookies.set("user",response.data.token,{expires:inThirtyMinutes})
-            }
-            else
-            {
+
+                Cookies.set("user",response.data.token,{
+                    expires:inThirtyMinutes
+                })
+
+                const saltRounds = 10
+                const salt = bcrypt.genSaltSync(saltRounds);
+                const hash = bcrypt.hashSync(response.data.token, salt);
+
+                Cookies.set("csrf_token", hash, {
+                    expires:inThirtyMinutes
+                })
+            }else{
                 alert("Wrong Try Again")
             }
         })
@@ -84,16 +95,16 @@ const SignIn = (props) =>
     {
         props.history.push("/signup")
     }
-
-    // HTML page to load on render
+    
     return (
         <div className="row">
             <div className="col s6 m6 lg6">
             <form action="" method="post" onSubmit={handleSubmit}>
+               
                 <label htmlFor="username">Username</label>
-                <input type="text" name="username"  value={username} onChange={handleChange} id="username"/>
+                <input type="text" name="username" maxLength="15" value={username} onChange={handleChange} id="username"/>
                 <label htmlFor="password">Password</label>
-                <input type="password" name="password"  value={password} onChange={handleChange} id="password"/>
+                <input type="password" name="password" maxLength="20"  value={password} onChange={handleChange} id="password"/>
                 <button type="submit" >Submit</button>
             </form>
             <button onClick={handleLink}>Sign Up</button>
