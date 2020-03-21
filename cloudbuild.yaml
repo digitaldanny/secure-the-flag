@@ -20,7 +20,16 @@ steps:
     - 'REACT_APP_BASE_API_URL_G=${_REACT_APP_BASE_API_URL}'
     - './client/'
 
-  # == deploy ===
+  # === push ===
+  - name: 'gcr.io/cloud-builders/docker'
+    id:   'STORE SERVER CONTAINER IMAGE'
+    args: ['push','gcr.io/$PROJECT_ID/stf-server-feeble']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id:   'STORE CLIENT CONTAINER IMAGE'
+    args: ['push','gcr.io/$PROJECT_ID/stf-client-feeble']
+  
+    # == deploy ===
   - name: 'gcr.io/cloud-builders/gcloud'
     id: 'DEPLOY SERVER'
     args:
