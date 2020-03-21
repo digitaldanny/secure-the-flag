@@ -21,7 +21,7 @@ const Register = (props) => {
             return;
         }
         console.log(apiUrl.signupURL + "signup");
-        axios.post(apiUrl.signupURL, {
+        axios.post(`${apiUrl.signupURL}signup`, {
             email: email,
             username: username,
             password: password,
