@@ -68,7 +68,11 @@ router.post('/addPost', (req,res)=>{
               if(results.rows.length >0){
               res.status(200).send(results.rows)
               }
+            
            });
+        }
+})
+
 })
 
 
