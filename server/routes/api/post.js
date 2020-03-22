@@ -68,7 +68,7 @@ router.post('/addPost', (req,res)=>
           res.status(401).send("Refresh Page and Log Back in to work");
         }
         else{
-          pool.query('INSERT INTO post (username, post) VALUES ($1, $2)', [usernameValue, post], (error, results) =>{
+          pool.query('INSERT INTO post (username, post) VALUES ($1, $2)', [usernameValue.data, post], (error, results) =>{
                 if (error) {
                   // throw error;
                   res.send(error.detail);
