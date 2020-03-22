@@ -62,64 +62,61 @@ router.post('/addPost', (req,res)=>
   }
   // *********************** XSS ENDS HERE *************************
 
-  // Verify that the username is valid.
-  try 
-  {
-    var usernameValue = jwt.verify(username, 'secret').data;
-  }
-  catch(e)
-  {
-    res.status(401).send("Refresh Page and Log Back in to work")
-  }
+    jwt.verify(username , 'secret',(error,usernameValue)=>{
 
-  // Save the sanitized POST value in the SQL table for the sender's username.
-  pool.query('INSERT INTO post (username, post) VALUES ($1, $2)', [usernameValue, post], (error, results) => 
-  {
-    if (error) {
-      // throw error;
-      res.send(error.detail);
-      return;
-    }
-  
-    // if inserting post into SQL table is successful, respond success message.
-    res.status(200).send(responseOnSuccess);
-  })
-})
-
-router.get('/getPosts', (req,res)=>{
-  console.log("./getPosts");
-    const { username } = req.query
-   
-    try {
-    var usernameValue = jwt.verify(username, 'secret').data;
-   
-    }catch(e){}
-    pool.query(`SELECT * FROM post WHERE username= '${usernameValue}' `, (error, results) => {
-      if (error) {
-        throw error
-      }
-    });
-
-    let post = req.body.post
-    jwt.verify(username,'secret',(error,usernameValue)=>{
-
-            if(error){
-              res.status(401).send("Refresh Page and Log Back in to work");
-            }
-            else{
-              pool.query('INSERT INTO post (username, post) VALUES ($1, $2)', [usernameValue.data, post], (error, results) => {
+        if(error){
+          res.status(401).send("Refresh Page and Log Back in to work");
+        }
+        else{
+          pool.query('INSERT INTO post (username, post) VALUES ($1, $2)', [usernameValue, post], (error, results) =>{
                 if (error) {
-
-                  throw error;
+                  // throw error;
+                  res.send(error.detail);
+                  return;
+                }else{
+                  
+                  // if inserting post into SQL table is successful, respond success message.
+                  res.status(200).send(responseOnSuccess);
                 }
+          });
+        } 
+    });
+});
 
-              res.status(200).send("Added Post")
+// router.get('/getPosts', (req,res)=>{
+//   console.log("./getPosts");
+//     const { username } = req.query
+   
+//     try {
+//     var usernameValue = jwt.verify(username, 'secret').data;
+   
+//     }catch(e){}
+//     pool.query(`SELECT * FROM post WHERE username= '${usernameValue}' `, (error, results) => {
+//       if (error) {
+//         throw error
+//       }
+//     });
 
-               });
-            }
-        });
+//     let post = req.body.post
+//     jwt.verify(username,'secret',(error,usernameValue)=>{
 
-    })
+//             if(error){
+//               res.status(401).send("Refresh Page and Log Back in to work");
+//             }
+//             else{
+//               pool.query('INSERT INTO post (username, post) VALUES ($1, $2)', [usernameValue.data, post], (error, results) => {
+//                 if (error) {
+
+//                   throw error;
+//                 }
+
+//               res.status(200).send("Added Post")
+
+//                });
+//             }
+//         });
+
+//     })
 
     router.get('/getPosts', (req,res)=>{
 
@@ -128,10 +125,11 @@ router.get('/getPosts', (req,res)=>{
         jwt.verify(username,'secret',(err,usernameValue)=>{
           if(err){
             res.status(401).send("Refresh Page and Log Back in to work");
-          }else{
+          }
+          else{
 
             pool.query(`SELECT * FROM post WHERE username= '${usernameValue.data}' `, (error, results) => {
-              if (error) {
+              if (error){
                 throw error
               }
 
@@ -140,10 +138,9 @@ router.get('/getPosts', (req,res)=>{
               }
             
            });
-        }
-})
-
-})
+          }
+        });
+    });
 
 
 router.get('/getOtherPost', (req,res)=>{
