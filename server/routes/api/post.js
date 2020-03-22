@@ -83,41 +83,6 @@ router.post('/addPost', (req,res)=>
     });
 });
 
-// router.get('/getPosts', (req,res)=>{
-//   console.log("./getPosts");
-//     const { username } = req.query
-   
-//     try {
-//     var usernameValue = jwt.verify(username, 'secret').data;
-   
-//     }catch(e){}
-//     pool.query(`SELECT * FROM post WHERE username= '${usernameValue}' `, (error, results) => {
-//       if (error) {
-//         throw error
-//       }
-//     });
-
-//     let post = req.body.post
-//     jwt.verify(username,'secret',(error,usernameValue)=>{
-
-//             if(error){
-//               res.status(401).send("Refresh Page and Log Back in to work");
-//             }
-//             else{
-//               pool.query('INSERT INTO post (username, post) VALUES ($1, $2)', [usernameValue.data, post], (error, results) => {
-//                 if (error) {
-
-//                   throw error;
-//                 }
-
-//               res.status(200).send("Added Post")
-
-//                });
-//             }
-//         });
-
-//     })
-
     router.get('/getPosts', (req,res)=>{
 
         const { username } = req.query;
