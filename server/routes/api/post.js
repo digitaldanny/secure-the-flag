@@ -103,17 +103,22 @@ router.get('/getPosts',(req,res)=>{
 
 router.get('/getOtherPost', (req,res)=>{
    
-    const username = req.query.username;
-    
-    pool.query(`SELECT * FROM post WHERE username= '${username}'`)
-    .then((results)=>{
-
-          res.status(200).status(results.rows);
-        }
-    )
-    .catch((error)=>{
-      throw error;
-    });
+  const { username } = req.query
+  //Strong version wraps it as a string
+   //Removes quoted from string
+   //var strWithOutQuotes= username.replace(/[()/-/'"]+/g, '')
+   // console.log(strWithOutQuotes)
+   pool.query(`SELECT * FROM post WHERE username= '${username}'`, (error, results) => {
+       if (error) {
+         throw error
+       }
+       // console.log(results)
+       if(results.rows.length >0){
+         res.status(200).send(results.rows)
+       }else{
+         res.status(204).send(results.rows)
+       }
+     })
 });
 
     checkUser = (username) => {
