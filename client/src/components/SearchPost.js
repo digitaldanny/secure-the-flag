@@ -54,7 +54,7 @@ class SearchPost extends Component {
             <h6 style={{paddingLeft:10}} className="header">{item.user_id}</h6>
                 </div>
                 <div className="card-content">
-                {item.post}
+				<div dangerouslySetInnerHTML={{__html: item.post}}/>
                 </div>
                
             </div>
